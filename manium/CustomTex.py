@@ -41,13 +41,21 @@ def SlashShift(fontSize):
     return np.array([0,.108,0]) * fontSize/40
 
 def AddTex(mathTex, newText, aligned_edge = DOWN, shift = (0,0,0)):
-    
+    print("Adding Tex:", newText)
+
     newTex = CopyMathTex(mathTex, newText)
     # print("Add Tex: " +"|" + newText[:6]+ "|")
     if newText[:6] == r"\times":
         newTex = SplitTex(newTex, 6)
 
     newTex.next_to(mathTex, RIGHT, buff = SpaceBuff(mathTex.font_size), aligned_edge=aligned_edge).shift(shift)
+
+    return newTex
+
+def ReplaceTex(mathTex, newTex, aligned_edge = ORIGIN, shift = (0,0,0)):
+    newTex = CopyMathTex(mathTex, newTex)
+
+    newTex.next_to(mathTex.get_left(), RIGHT, buff = 0, aligned_edge=aligned_edge).shift(shift)
 
     return newTex
 
@@ -60,5 +68,28 @@ def SplitTex(mathTex, fence_index, aligned_edge = DOWN, shift = (0,0,0)):
     secondTex = AddTex(firstTex, mathTex.tex_string[fence_index:], aligned_edge=aligned_edge, shift=shift)
 
     group = VGroup(firstTex, secondTex)
+
+    return group
+
+def SplitTexMany(mathTex, fence_indexes, aligned_edge = DOWN, shift = (0,0,0)):
+    firstText = mathTex.tex_string[:fence_indexes[0]]
+    firstTex = CopyMathTex(mathTex, firstText)
+    print("Adding first Tex:", firstText)
+    
+    firstTex.next_to(mathTex.get_left(), RIGHT, buff = 0)
+
+    fences = len(fence_indexes)
+    middleTex = []
+
+    middleTex.append(firstTex)
+
+    for i in range(1, fences):
+        # print("i eq:", i)
+        newTex = AddTex(middleTex[i-1], mathTex.tex_string[fence_indexes[i-1]:fence_indexes[i]], aligned_edge=aligned_edge, shift=shift)
+        middleTex.append(newTex)
+
+    lastTex = AddTex(middleTex[fences-1], mathTex.tex_string[fence_indexes[fences-1]:], aligned_edge=aligned_edge, shift=shift)
+
+    group = VGroup(*middleTex, lastTex)
 
     return group
