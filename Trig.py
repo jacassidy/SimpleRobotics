@@ -844,5 +844,31 @@ class ArcLengthToAngleRelation(Scene):
 
         #Move to top and then display a bunch of useful properties
         self.play(arcLengthEquasion.animate.move_to((0,2,0)))
+
+
+        s_arc = (Arc(radius=self.scale, start_angle= 0, angle=PI/3, color=CBlue, stroke_width = circleStrokeWidth)).move_to((-3, 0, 0))
+
+        eq = MathTex("=", color = BLACK, font_size = 100).next_to(s_arc, RIGHT, buff = .6)
+        radius_line = Line((0,0,0), (np.cos(PI/6), np.sin(PI/6), 0), stroke_width = 4, color = COrange).next_to(eq, RIGHT, buff = .8)
+        radius_text = MathTex("r", color = COrange, font_size = 35).next_to(radius_line, LEFT, buff = 0).shift((.3, .2, 0))
+        times = MathTex(r"\times", color = BLACK, font_size = 100).next_to(radius_line, RIGHT, buff = .6)
+
+        angle_center = times.get_right() + RIGHT * .6 + DOWN * .3
+        theta_arc =  Arc(radius=self.scale/8, start_angle= 0, angle=PI/3, color=COrange, stroke_width = 4).move_arc_center_to(angle_center)
+        
+        theta_angle_line_flat = Line(angle_center, angle_center + np.array([.8,0,0]), color = BLACK, stroke_width = 2, stroke_opacity = .6)
+        theta_angle_line_angled = Line(angle_center, angle_center + np.array([np.cos(PI/3)*.8,np.sin(PI/3)*.8,0]), color = BLACK, stroke_width = 2, stroke_opacity = .6)
+        theta_arc.set_z_index(10)
+
+
+        # radius_circle = Circle(radius=1, color = BLACK, stroke_opacity = .6, fill_opacity = 0, stroke_width = 1).move_to((0,0,0))
+
+        self.play(FadeIn(s_arc), FadeIn(theta_arc), FadeIn(eq), FadeIn(radius_line), FadeIn(times), FadeIn(radius_text),
+                  FadeIn(theta_angle_line_flat),FadeIn(theta_angle_line_angled))
+        
+        self.play(Highlight(s_arc))
+        self.play(Highlight(radius_line))
+        self.play(Highlight(theta_arc))
+
         self.wait(1)
 
