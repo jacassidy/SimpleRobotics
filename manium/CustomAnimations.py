@@ -104,7 +104,7 @@ class UnravelCircle(UnravelArc):
 
 
 class Emphasize(Animation):
-    def __init__(self, mobject: Mobject | None, scale_factor: float = 1.5, pause_porportion: float = .2, **kwargs):
+    def __init__(self, mobject: Mobject | None, scale_factor: float = 0.5, pause_porportion: float = .2, **kwargs):
         super().__init__(mobject, **kwargs)
 
         #parameters

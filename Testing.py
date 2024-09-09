@@ -4,8 +4,20 @@ from scipy.integrate import quad  # Import quad from scipy
 
 
 class Test(Scene):
+
     def construct(self):
-        pass
+        # Load your SVG file
+        svg_object = SVGMobject("Bobuilda.svg")
+        # svg_object = SVGMobject("GobuildaAtt2.svg")
+
+        
+        # You can scale, rotate, and position the SVG as needed
+        svg_object.scale(2)  # Scaling the SVG
+        svg_object.set_color(WHITE)  # Set the color of the SVG
+
+        # Animate the SVG appearance
+        self.play(Write(svg_object), run_time =3)
+        self.wait(2)
 
 
 
@@ -87,17 +99,6 @@ class Test2(Scene):
         self.play(Create(graph))
 
         # Wait for a moment to display
-        self.wait(2)
-
-        # Load your SVG file
-        svg_object = SVGMobject("5203_2402_0014__91946__97788_edge.svg")
-        
-        # You can scale, rotate, and position the SVG as needed
-        svg_object.scale(2)  # Scaling the SVG
-        svg_object.set_color(WHITE)  # Set the color of the SVG
-
-        # Animate the SVG appearance
-        self.play(Create(svg_object), run_time =3)
         self.wait(2)
 
 
