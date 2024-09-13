@@ -40,6 +40,32 @@ class TagLine(Scene):
         # Fade out everything
         self.play(FadeOut(title), FadeOut(tagline), FadeOut(svg_object), run_time=1)
 
+class Thumbnail(Scene):
+    def construct(self):
+        #Draw in motors
+        motor1 = SVGMobject("GobuildaAtt2.svg").scale(1.5).move_to((-4,-.1,0)).set_color(CBlue)
+        motor2 = SVGMobject("GobuildaAtt2.svg").scale(1.5).move_to((0,-.1,0)).set_color(WHITE)
+        motor3 = SVGMobject("GobuildaAtt2.svg").scale(1.5).move_to((4,-.1,0)).set_color(COrange)
+
+        self.play(Write(motor1), Write(motor2), Write(motor3), run_time = 4)
+        self.wait(1.5)
+
+        #Write in text above motors
+        rWe = Text("Run Without Encoder", color = WHITE, font_size= 25).next_to(motor1, UP, buff = .25)
+        rWOe = Text("Run With Encoder", color = WHITE, font_size= 25).next_to(motor2, UP, buff = .25)
+        rPos = Text("Run To Position", color = WHITE, font_size= 25).next_to(motor3, UP, buff = .25)
+
+        self.play(Write(rWe))
+        self.wait(1)
+        self.play(Write(rWOe))
+        self.wait(1)
+        self.play(Write(rPos))
+        self.wait(4)
+
+        #Fade out everything
+        self.play(FadeOut(rWe), FadeOut(rWOe), FadeOut(rPos), FadeOut(motor1), FadeOut(motor2), FadeOut(motor3))
+        self.wait(1)
+
 class Settings(Scene):
     def construct(self):
         CustomBackground(self)
@@ -50,12 +76,12 @@ class Settings(Scene):
         motor3 = SVGMobject("GobuildaAtt2.svg").scale(1.5).move_to((4,-.1,0)).set_color(BLACK)
 
         self.play(Write(motor1), Write(motor2), Write(motor3), run_time = 4)
-        self.wait(1)
+        self.wait(1.5)
 
         #Write in text above motors
-        rWe = Text("Run Without Encoder", color = BLACK, font_size= 25).next_to(motor1, UP, buff = .25)
-        rWOe = Text("Run With Encoder", color = BLACK, font_size= 25).next_to(motor2, UP, buff = .25)
-        rPos = Text("Run To Position", color = BLACK, font_size= 25).next_to(motor3, UP, buff = .25)
+        rWe = Text("Run Without Encoder", color = BLACK, font_size= 50).next_to(motor1, UP, buff = 1)
+        rWOe = Text("Run With Encoder", color = BLACK, font_size= 50).next_to(motor2, UP, buff = 1)
+        rPos = Text("Run To Position", color = BLACK, font_size= 50).next_to(motor3, UP, buff = 1)
 
         self.play(Write(rWe))
         self.wait(1)
@@ -218,17 +244,19 @@ class MotorCurrent(Scene):
         self.play(velocityTracker.animate(rate_func = smooth).set_value(0), run_time = 4)
 
         self.play(FadeOut(rotation_arrow))
+        current_arrow_1.clear_updaters()
+        current_arrow_2.clear_updaters()
 
         self.wait(1)
 
         self.play(Emphasize(mainText, scale_factor= .5), run_time = 2)
         self.wait(1)
-        self.play(current_arrow_1.animate(rate_func = there_and_back_with_pause).set_stroke(width = 12),
+        self.play(current_arrow_1.animate(rate_func = there_and_back_with_pause).set_stroke(width = 16),
                   current_arrow_2.animate(rate_func = there_and_back_with_pause).set_stroke(width = 12),
                    run_time = 2)
 
 
-        self.wait(2)
+        self.wait(1)
 
         finalMainTextPos = vgroup[0].get_center()
 
@@ -274,11 +302,11 @@ class RWOENC(Scene):
         cross = VGroup(cross_line1, cross_line2)
 
         self.play(Create(cross), run_time=1)
-        self.wait(1)
+        self.wait(2.5)
 
         # Make the 'X' fade away
         self.play(FadeOut(cross), run_time=2)
-        self.wait(1)
+        self.wait(.5)
 
         # Create the checkmark using a single path (VMobject)
         checkmark = VMobject()
@@ -290,7 +318,51 @@ class RWOENC(Scene):
 
         # Fade in the green checkmark
         self.play(Create(checkmark), run_time=2)
+        self.wait(9)
+        self.play(FadeOut(*self.mobjects))
+
+class RWENC(Scene):
+    def construct(self):
+        CustomBackground(self)
+
+        #Draw in motors
+        motor1 = SVGMobject("GobuildaAtt2.svg").scale(1.5).move_to((-3,-.1,0)).set_color(BLACK)
+
+        #Write in text above motors
+        rWe = Text("Run With Encoder", color = BLACK, font_size= 25).next_to(motor1, UP, buff = .25)
+
+        self.play(Write(rWe))
+        #Add in motor SVG
+        self.play(Write(motor1), run_time = 4)
+        self.wait(1)
+
+        image = ImageMobject("EncCable")
+        image.scale(1).move_to((-1.8,-1.3,0))  # Optional scaling
+        self.play(FadeIn(image))
         self.wait(2)
+
+        runWithEncoder = Text("motor.setPower()", color= BLACK, font_size = 30).move_to((2, 1.8, 0))
+        motorSetPow = Text("power", color= BLACK, font_size = 50).move_to((2, -1.8, 0))
+
+        self.play(Write(runWithEncoder), Write(motorSetPow))
+        self.wait(2)
+
+         # Draw arrow between the two objects
+
+        arrow = Arrow(start=runWithEncoder.get_bottom(), end=motorSetPow.get_top(), buff=0.1, color=CBlue, stroke_width=5)
+        self.play(Create(arrow), run_time=2)
+        
+        # Create a big 'X' over the arrow
+        cross_line1 = Line(arrow.get_start() + RIGHT, arrow.get_end() + LEFT, stroke_width=8, color=RED)
+        cross_line2 = Line(arrow.get_start() + LEFT, arrow.get_end() + RIGHT, stroke_width=8, color=RED)
+        cross = VGroup(cross_line1, cross_line2)
+
+        self.play(Write(cross_line1), Write(cross_line2))
+
+        self.wait(12)
+
+        self.play(FadeOut(*self.mobjects))
+
 
 class BurnOut(Scene):
     def construct(self):
@@ -299,32 +371,42 @@ class BurnOut(Scene):
         # Scale factor (0.8 of the original size)
         scale_factor = 0.8
 
+        # Set up independent ValueTrackers for each motor
+        motor_1_tracker = ValueTracker(0)
+        motor_2_tracker = ValueTracker(0)
+
         # First motor setup
-        motor_1_group, stator_1 = self.create_motor_group(scale_factor)
+        motor_1_group, stator_1 = self.create_motor_group(motor_1_tracker, scale_factor)
 
-        # Animate first motor appearance
-        self.play(Create(motor_1_group))
-        self.wait(1)
-
-        # Shift the first motor to the left
-        self.play(motor_1_group.animate.shift(LEFT * 3))
+        motor_1_group.shift(LEFT * 3)
 
         # Second motor setup (initially invisible, placed on the right)
-        motor_2_group, stator_2 = self.create_motor_group(scale_factor)
+        motor_2_group, stator_2 = self.create_motor_group(motor_2_tracker, scale_factor)
         motor_2_group.shift(RIGHT * 3)
 
         # Fade in the second motor
-        self.play(FadeIn(motor_2_group))
+        self.play(FadeIn(motor_2_group), FadeIn(motor_1_group), run_time = 2)
 
-        # Set up independent ValueTrackers for each motor
-        motor_1_tracker = ValueTracker(2 * PI / 3)
-        motor_2_tracker = ValueTracker(2 * PI / 3)
+        #Add captions
+        rWOENC = Text("Run Without Encoder", font_size = 35, color = BLACK).move_to(stator_1.get_center() + np.array([0,-2.2, 0]))
+        rWENC = Text("Run With Encoder", font_size = 35, color = BLACK).move_to(stator_2.get_center() + np.array([0,-2.2, 0]))
+
+        self.wait(5)
+        #Add power of .1 at bottom
+        power = Text("Power = .1", color = BLACK, font_size=45).move_to((0, -3, 0))
+        self.play(Write(power))
+        self.wait(1)
+
+        self.play(Write(rWENC), Write(rWOENC))
+        
 
         # Animate both motors independently
-        self.animate_motor(stator_1.get_center(), motor_1_tracker, scale_factor)
-        self.animate_motor(stator_2.get_center(), motor_2_tracker, scale_factor)
-
-        self.wait(2)
+        self.animate_motor(stator_1.get_center(), motor_1_tracker, .1, scale_factor)
+        self.wait(1)
+        self.animate_motor(stator_2.get_center(), motor_2_tracker, .1, scale_factor, run_timer = 2)
+        self.wait(6)
+        self.play(motor_2_tracker.animate.set_value(1), run_time = 4)
+        self.wait(.5)
 
         # Set the center of the battery at [0,0,0] for now (replace with desired position)
         battery_center = np.array([0, 2.5, 0])
@@ -346,7 +428,7 @@ class BurnOut(Scene):
         battery_group.move_to(battery_center)
 
         # Add the battery components to the scene
-        self.add(battery_outer, battery_cap, battery_fill)
+        self.play(FadeIn(battery_outer), FadeIn(battery_cap), FadeIn(battery_fill))
         self.wait(1)
 
         # Create a ValueTracker to control the battery level (1 is full, 0 is empty)
@@ -370,14 +452,14 @@ class BurnOut(Scene):
 
         # Remove the updater
         battery_fill.clear_updaters()
-
+        self.wait(9)
         # Final cleanup, fade out both motors
         self.play(FadeOut(*self.mobjects))
         self.wait(1)
 
 
 
-    def create_motor_group(self, scale_factor=1.0):
+    def create_motor_group(self, value_tracker, scale_factor=1.0):
         """Creates a motor group with stator, rotor, wires, and arrows, scaled down by a factor."""
         # Create stator (outer part of the motor)
         stator = Circle(radius=2 * scale_factor, color=DARK_GRAY, stroke_width=6 * scale_factor)
@@ -398,7 +480,7 @@ class BurnOut(Scene):
         red_wire, black_wire = self.create_wires(scale_factor)
 
         # Create arrows (current indicators)
-        current_arrow_1, current_arrow_2 = self.create_arrows(red_wire, black_wire, scale_factor)
+        current_arrow_1, current_arrow_2 = self.create_arrows(red_wire, black_wire, value_tracker, scale_factor)
 
         # Return the motor group
         motor_group = VGroup(stator, rotor, lines, red_wire, black_wire, current_arrow_1, current_arrow_2)
@@ -417,27 +499,33 @@ class BurnOut(Scene):
 
         return red_wire, black_wire
 
-    def create_arrows(self, red_wire, black_wire, scale_factor=1.0):
+    def create_arrows(self, red_wire, black_wire, value_tracker, scale_factor=1.0):
         """Creates current arrows for the motor, scaled down by a factor."""
         arrowLength = 1 * scale_factor
         redEnd = red_wire.get_end() - np.array([0.2, 0, 0]) * scale_factor
         blackEnd = black_wire.get_end() - np.array([0.2, 0, 0]) * scale_factor
 
-        current_arrow_1 = Arrow(start=redEnd + np.array([-arrowLength, 0, 0]), end=redEnd, buff=-0.0, color=CBlue, stroke_width=6 * scale_factor)
+        current_arrow_1 = Arrow(start=redEnd + np.array([-arrowLength, 0, 0]), end=redEnd, buff=-0.0, color=CBlue, stroke_width=6 * scale_factor )
         current_arrow_2 = Arrow(start=blackEnd, end=blackEnd + np.array([-arrowLength, 0, 0]), buff=-0.0, color=CBlue, stroke_width=6 * scale_factor)
+
+        current_arrow_1.add_updater(lambda a: a.set_stroke(width = 6 * scale_factor * (1 + value_tracker.get_value())))
+        current_arrow_2.add_updater(lambda a: a.set_stroke(width = 6 * scale_factor * (1 + value_tracker.get_value())))
 
         return current_arrow_1, current_arrow_2
 
-    def animate_motor(self, center, value_tracker, scale_factor=1.0):
+    def animate_motor(self, center, value_tracker, target_p_value, scale_factor=1.0, run_timer = 4.5):
         """Sets up motor rotation based on value tracker, scaled down by a factor."""
         # Extract components
         rotor_position_line = always_redraw(lambda: Line(
             np.array([0, 0, 0]) + center, 
-            0.8 * scale_factor * unitVector(value_tracker.get_value()) + center, 
+            0.8 * scale_factor * unitVector(value_tracker.get_value() *.001) + center, 
             color=COrange, 
             stroke_width=6 * scale_factor, 
             cap_style=constants.CapStyleType.ROUND
         ))
+
+        p_text = always_redraw(lambda: MathTex(rf"P = {value_tracker.get_value():.2f}", color = BLACK, 
+                                               font_size = 40 * scale_factor).move_to(np.array([0, 2.5 * scale_factor,0]) + center))
 
         rotation_arrow = CurvedArrow(
             start_point=np.array([-1 * scale_factor, 1 * scale_factor, 0]) + center, 
@@ -447,9 +535,11 @@ class BurnOut(Scene):
             stroke_width=8 * scale_factor
         )
 
+        rotation_arrow.add_updater(lambda a: a.set_stroke(width =scale_factor * 8 * (1 + abs(value_tracker.get_value()*2))))
+
         # Animate motor rotation (specifics can be adjusted later)
-        self.play(FadeIn(rotor_position_line), FadeIn(rotation_arrow))
-        self.play(value_tracker.animate.set_value(-8 * PI + 2 * PI / 3), run_time=4.5)
+        self.play(FadeIn(rotor_position_line), FadeIn(rotation_arrow), Write(p_text))
+        self.play(value_tracker.animate.set_value(target_p_value), run_time=run_timer)
         self.wait(2)
 
 

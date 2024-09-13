@@ -4,20 +4,74 @@ from scipy.integrate import quad  # Import quad from scipy
 
 
 class Test(Scene):
-
     def construct(self):
-        # Load your SVG file
-        svg_object = SVGMobject("Bobuilda.svg")
-        # svg_object = SVGMobject("GobuildaAtt2.svg")
+        # Title
+        title = Text("Understanding Radians").to_edge(UP)
+        self.play(Write(title))
+        self.wait(1)
 
-        
-        # You can scale, rotate, and position the SVG as needed
-        svg_object.scale(2)  # Scaling the SVG
-        svg_object.set_color(WHITE)  # Set the color of the SVG
+        # Draw Circle with center O
+        circle = Circle(radius=2)
+        center_dot = Dot(ORIGIN)
+        center_label = MathTex("O").next_to(center_dot, DOWN)
+        self.play(Create(circle), FadeIn(center_dot, center_label))
+        self.wait(1)
 
-        # Animate the SVG appearance
-        self.play(Write(svg_object), run_time =3)
+        # Draw radius
+        radius_line = Line(ORIGIN, circle.point_at_angle(0))
+        radius_label = MathTex("r").next_to(radius_line, UP)
+        self.play(Create(radius_line), Write(radius_label))
+        self.wait(1)
+
+        # Mark off arc length equal to radius 'r'
+        theta = 1  # 1 radian
+        arc = Arc(radius=2, start_angle=0, angle=theta, color=YELLOW)
+        arc_length_label = MathTex("\\text{Arc length} = r").set_color(YELLOW)
+        arc_length_label.next_to(arc.point_from_proportion(0.5), UP+RIGHT)
+        self.play(Create(arc), Write(arc_length_label))
+        self.wait(1)
+
+        # Draw second radius line
+        radius_line_2 = Line(ORIGIN, circle.point_at_angle(theta))
+        self.play(Create(radius_line_2))
+        self.wait(1)
+
+        # Show angle theta at center
+        angle = Angle(radius_line_2, radius_line, radius=0.5, other_angle=False)
+        theta_label = MathTex("1\\ \\text{radian}").next_to(angle, LEFT)
+        self.play(Create(angle), Write(theta_label))
+        self.wait(1)
+
+        # Show circumference is 2*pi*r
+        circumference_formula = MathTex("\\text{Circumference} = 2\\pi r").to_edge(DOWN)
+        self.play(Write(circumference_formula))
+        self.wait(1)
+
+        # Indicate that full circle corresponds to 2*pi radians
+        full_angle_label = MathTex("\\text{Full circle} = 2\\pi\\ \\text{radians}")
+        full_angle_label.next_to(circumference_formula, UP)
+        self.play(Write(full_angle_label))
+        self.wait(1)
+
+        # Show conversion between degrees and radians
+        conversions = VGroup(
+            MathTex("360^\\circ = 2\\pi\\ \\text{radians}"),
+            MathTex("180^\\circ = \\pi\\ \\text{radians}"),
+            MathTex("90^\\circ = \\dfrac{\\pi}{2}\\ \\text{radians}")
+        ).arrange(DOWN, aligned_edge=LEFT).shift(LEFT*3 + UP)
+        for conversion in conversions:
+            self.play(Write(conversion))
+            self.wait(1)
+
+        # Conclude
+        conclusion = Text("Radians relate angles directly to arc lengths.")
+        conclusion.next_to(full_angle_label, DOWN)
+        self.play(Write(conclusion))
         self.wait(2)
+
+        # Fade out everything
+        self.play(FadeOut(*self.mobjects))
+
 
 
 
